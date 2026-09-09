@@ -78,26 +78,30 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
   return <div className="space-y-6 animate-fade-in">
     <button onClick={onBack} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors"><ArrowLeft className="w-4 h-4" /> Back to players</button>
 
-    {/* Featured image card */}
+    {/* Player header: vertical image + name side by side */}
     <div className="relative rounded-2xl overflow-hidden border border-[#e2e8f0] bg-white shadow-sm">
-      <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-gradient-to-br from-[#14213d] to-[#2f7d5a] overflow-hidden group">
-        {player.image_url ? (
-          <img src={player.image_url} alt={player.name} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center"><Users className="w-20 h-20 text-white/30" /></div>
-        )}
-        {/* Bottom gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        {/* Name + position overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
-          <p className="text-xs text-emerald-300 font-semibold uppercase tracking-wider mb-1.5">{player.position || 'Player'}</p>
-          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg">{player.name}</h2>
+      <div className="flex flex-col sm:flex-row">
+        {/* Vertical image */}
+        <div className="relative sm:w-2/5 lg:w-1/3 shrink-0 bg-gradient-to-br from-[#14213d] to-[#2f7d5a] overflow-hidden group">
+          <div className="aspect-[3/4] sm:aspect-auto sm:h-full sm:min-h-[320px]">
+            {player.image_url ? (
+              <img src={player.image_url} alt={player.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center"><Users className="w-16 h-16 text-white/30" /></div>
+            )}
+          </div>
+          {/* Upload button */}
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="player-image-upload" disabled={uploading} />
+          <label htmlFor="player-image-upload" className="absolute top-3 right-3 flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100 transition-opacity">
+            <Camera className="w-3.5 h-3.5" /> {uploading ? '...' : 'Change'}
+          </label>
         </div>
-        {/* Upload button */}
-        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="player-image-upload" disabled={uploading} />
-        <label htmlFor="player-image-upload" className="absolute top-4 right-4 flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100 transition-opacity">
-          <Camera className="w-4 h-4" /> {uploading ? 'Uploading...' : 'Change photo'}
-        </label>
+        {/* Name + position */}
+        <div className="flex-1 flex flex-col justify-center p-6 lg:p-10">
+          <p className="text-xs text-emerald-500 font-semibold uppercase tracking-wider mb-2">{player.position || 'Player'}</p>
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-[#14213d] leading-tight">{player.name}</h2>
+          <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-[#2f7d5a] to-[#d9a441]" />
+        </div>
       </div>
     </div>
 
