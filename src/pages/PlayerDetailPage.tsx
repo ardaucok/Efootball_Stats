@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
-import { ArrowLeft, Award, ImagePlus, Save, Trash2, X, Goal, Users, TrendingUp, Shield } from 'lucide-react';
-import { supabase, type Player, type PlayerImage, type Award as AwardType } from '@/lib/supabase';
+import { ArrowLeft, Award, ImagePlus, Save, Trash2, X, Goal, Users, TrendingUp, Shield, Camera } from 'lucide-react';
+import { supabase, type Player, type Award as AwardType } from '@/lib/supabase';
 import { uploadImage } from '@/lib/storage';
 
 type PlayerDetailPageProps = {
@@ -21,62 +21,42 @@ const statCards: { key: keyof Player; label: string; icon: typeof Goal; decimals
 
 function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
   const [player, setPlayer] = useState<Player | null>(null);
-  const [images, setImages] = useState<PlayerImage[]>([]);
   const [awards, setAwards] = useState<AwardType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAwardForm, setShowAwardForm] = useState(false);
-  const [awardForm, setAwardForm] = useState({ award_type: '', season: '', team: '', image_url: '', description: '' });
-  const [captionInput, setCaptionInput] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showAwardForm, setShowAwardForm] = useState(false);
+  const [awardForm, setAwardForm] = useState({ award_type: '', team: '', image_url: '', description: '' });
 
   useEffect(() => {
     const load = async () => {
-      const [playerRes, imagesRes, awardsRes] = await Promise.all([
-        supabase.from('players').select('*').eq('id', playerId).maybeSingle(),
-        supabase.from('player_images').select('*').eq('player_id', playerId).order('created_at', { ascending: false }),
-        supabase.from('awards').select('*').eq('player_name', player?.name || '').order('created_at', { ascending: false }),
-      ]);
-      if (playerRes.data) setPlayer(playerRes.data as Player);
-      if (imagesRes.data) setImages(imagesRes.data as PlayerImage[]);
-      if (awardsRes.data) setAwards(awardsRes.data as AwardType[]);
+      const { data: playerData } = await supabase.from('players').select('*').eq('id', playerId).maybeSingle();
+      if (playerData) {
+        setPlayer(playerData as Player);
+        const { data: awardData } = await supabase.from('awards').select('*').eq('player_name', (playerData as Player).name).order('created_at', { ascending: false });
+        if (awardData) setAwards(awardData as AwardType[]);
+      }
       setLoading(false);
     };
     void load();
   }, [playerId]);
 
-  // Reload awards once player name is known
-  useEffect(() => {
-    if (!player?.name) return;
-    const loadAwards = async () => {
-      const { data } = await supabase.from('awards').select('*').eq('player_name', player.name).order('created_at', { ascending: false });
-      if (data) setAwards(data as AwardType[]);
-    };
-    void loadAwards();
-  }, [player?.name]);
-
   const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !player) return;
+    if (!file) return;
     setUploading(true);
     const url = await uploadImage('player-images', file, `player-${playerId}-`);
     if (url) {
-      const { data } = await supabase.from('player_images').insert({ player_id: playerId, image_url: url, caption: captionInput.trim() || null }).select('*').single();
-      if (data) setImages((prev) => [data as PlayerImage, ...prev]);
-      setCaptionInput('');
+      const { data } = await supabase.from('players').update({ image_url: url }).eq('id', playerId).select('*').single();
+      if (data) setPlayer(data as Player);
     }
     setUploading(false);
     event.target.value = '';
   };
 
-  const deleteImage = async (imageId: string) => {
-    const { error } = await supabase.from('player_images').delete().eq('id', imageId);
-    if (!error) setImages((prev) => prev.filter((img) => img.id !== imageId));
-  };
-
   const saveAward = async () => {
     if (!player || !awardForm.award_type.trim()) return;
     const { data } = await supabase.from('awards').insert({ player_name: player.name, ...awardForm }).select('*').single();
-    if (data) { setAwards((prev) => [data as AwardType, ...prev]); setShowAwardForm(false); setAwardForm({ award_type: '', season: '', team: '', image_url: '', description: '' }); }
+    if (data) { setAwards((prev) => [data as AwardType, ...prev]); setShowAwardForm(false); setAwardForm({ award_type: '', team: '', image_url: '', description: '' }); }
   };
 
   const handleAwardImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -98,19 +78,27 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
   return <div className="space-y-6 animate-fade-in">
     <button onClick={onBack} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors"><ArrowLeft className="w-4 h-4" /> Back to players</button>
 
-    {/* Header */}
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#14213d] via-[#1c2f52] to-[#2f7d5a] border border-[#243653] p-6 lg:p-8">
-      <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-        <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl overflow-hidden bg-[#243653] flex items-center justify-center shrink-0">
-          {player.image_url ? <img src={player.image_url} alt={player.name} className="w-full h-full object-cover" /> : <Users className="w-12 h-12 text-slate-600" />}
+    {/* Featured image card */}
+    <div className="relative rounded-2xl overflow-hidden border border-[#e2e8f0] bg-white shadow-sm">
+      <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-gradient-to-br from-[#14213d] to-[#2f7d5a] overflow-hidden group">
+        {player.image_url ? (
+          <img src={player.image_url} alt={player.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"><Users className="w-20 h-20 text-white/30" /></div>
+        )}
+        {/* Bottom gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Name + position overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
+          <p className="text-xs text-emerald-300 font-semibold uppercase tracking-wider mb-1.5">{player.position || 'Player'}</p>
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-lg">{player.name}</h2>
         </div>
-        <div>
-          <p className="text-xs text-emerald-400 font-semibold uppercase tracking-wider mb-1">{player.position || 'Player'}</p>
-          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-white">{player.name}</h2>
-          <p className="text-sm text-[#b7c4d6] mt-2">Season {player.season || '2025-2026'}</p>
-        </div>
+        {/* Upload button */}
+        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="player-image-upload" disabled={uploading} />
+        <label htmlFor="player-image-upload" className="absolute top-4 right-4 flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100 transition-opacity">
+          <Camera className="w-4 h-4" /> {uploading ? 'Uploading...' : 'Change photo'}
+        </label>
       </div>
-      <div className="absolute -right-16 -bottom-20 w-72 h-72 rounded-full border border-[#d9a441]/10" />
     </div>
 
     {/* Stats grid */}
@@ -124,36 +112,6 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
           <p className="text-xs text-slate-500 mt-1">{card.label}</p>
         </div>;
       })}
-    </div>
-
-    {/* Image Gallery */}
-    <div className="bg-white border border-[#e2e8f0] rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div><h3 className="font-semibold text-[#14213d]">Image Gallery</h3><p className="text-xs text-slate-500 mt-1">Add photos of the player</p></div>
-        <div className="flex items-center gap-2">
-          <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="player-image-upload" disabled={uploading} />
-          <input value={captionInput} onChange={(e) => setCaptionInput(e.target.value)} placeholder="Caption (optional)" className="text-xs bg-[#f1f5f9] border border-[#e2e8f0] rounded-lg px-3 py-2 w-32 sm:w-40 outline-none focus:border-[#2f7d5a]/50" />
-          <label htmlFor="player-image-upload" className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg bg-[#2f7d5a] text-white text-sm font-semibold hover:bg-[#1f5a40] transition-colors">
-            <ImagePlus className="w-4 h-4" /> {uploading ? 'Uploading...' : 'Add image'}
-          </label>
-        </div>
-      </div>
-      {images.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {images.map((img) => (
-            <div key={img.id} className="group relative aspect-square rounded-xl overflow-hidden bg-[#f1f5f9]">
-              <img src={img.image_url} alt={img.caption || 'Player photo'} className="w-full h-full object-cover" />
-              {img.caption && <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-3 py-1.5 text-xs text-white truncate">{img.caption}</div>}
-              <button onClick={() => deleteImage(img.id)} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="py-12 text-center border-2 border-dashed border-[#e2e8f0] rounded-xl">
-          <ImagePlus className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-          <p className="text-sm text-slate-400">No images yet. Upload the first photo.</p>
-        </div>
-      )}
     </div>
 
     {/* Awards */}
@@ -171,10 +129,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
               </div>
               <div className="p-3">
                 <p className="text-xs text-rose-500 font-medium uppercase tracking-wide">{award.award_type || 'Award'}</p>
-                <div className="flex items-center gap-2 text-xs text-slate-500 mt-1.5">
-                  <span>{award.season || 'Season not set'}</span>
-                  {award.team && <><span>·</span><span>{award.team}</span></>}
-                </div>
+                {award.team && <p className="text-xs text-slate-500 mt-1.5">{award.team}</p>}
                 {award.description && <p className="text-xs text-slate-500 mt-1.5 line-clamp-2">{award.description}</p>}
               </div>
               <button onClick={() => deleteAward(award.id)} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -202,7 +157,6 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
             <label htmlFor="award-image-upload-detail" className="flex items-center gap-2 cursor-pointer text-xs text-rose-500 hover:text-rose-400"><ImagePlus className="w-4 h-4" /> Upload award image</label>
             {([
               ['award_type', 'Award type', 'text'],
-              ['season', 'Season', 'text'],
               ['team', 'Team', 'text'],
               ['image_url', 'Image URL', 'text'],
             ] as const).map(([key, label, type]) => (
