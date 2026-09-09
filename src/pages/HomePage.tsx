@@ -38,13 +38,13 @@ function HomePage({ onNavigate }: HomePageProps) {
 
   const totalGoals = players.reduce((sum, player) => sum + player.goals, 0);
   const topScorer = [...players].sort((a, b) => b.goals - a.goals)[0];
-  const avgRating = players.length ? players.reduce((sum, player) => sum + Number(player.rating), 0) / players.length : 0;
+  const avgConfidence = players.length ? players.reduce((sum, player) => sum + Number(player.confidence), 0) / players.length : 0;
 
   const cards = [
     { label: 'Total Players', value: players.length, icon: Users, accent: 'text-[#2f7d5a]', bg: 'bg-[#2f7d5a]/10' },
     { label: 'Goals Scored', value: totalGoals, icon: Goal, accent: 'text-[#d9a441]', bg: 'bg-[#d9a441]/10' },
     { label: 'Trophies Won', value: trophies.length, icon: Trophy, accent: 'text-[#e76f51]', bg: 'bg-[#e76f51]/10' },
-    { label: 'Average Rating', value: avgRating.toFixed(2), icon: TrendingUp, accent: 'text-[#264653]', bg: 'bg-[#264653]/10' },
+    { label: 'Average Confidence', value: avgConfidence.toFixed(2), icon: TrendingUp, accent: 'text-[#264653]', bg: 'bg-[#264653]/10' },
   ];
 
   return (
@@ -86,7 +86,7 @@ function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       <section className="grid lg:grid-cols-2 gap-4">
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-5"><div className="flex items-center justify-between mb-5"><div><h3 className="font-semibold text-[#14213d]">Top scorer</h3><p className="text-xs text-[#6b7c93] mt-1">Most goals in your archive</p></div><Goal className="w-5 h-5 text-[#d9a441]" /></div>{topScorer ? <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl overflow-hidden bg-[#f1f5f9] flex items-center justify-center">{topScorer.card_image_url ? <img src={topScorer.card_image_url} alt={topScorer.name} className="w-full h-full object-cover" /> : <Users className="w-6 h-6 text-[#cbd5e1]" />}</div><div className="flex-1"><p className="font-semibold text-[#14213d]">{topScorer.name}</p><p className="text-xs text-[#6b7c93] mt-1">{topScorer.team || 'No team'} · {topScorer.position || 'Player'}</p></div><div className="text-right"><p className="text-2xl font-bold text-[#d9a441]">{topScorer.goals}</p><p className="text-xs text-[#6b7c93]">goals</p></div></div> : <div className="flex items-center gap-3 text-[#6b7c93] text-sm"><Upload className="w-4 h-4" /> Import player data to see leaders</div>}</div>
+        <div className="bg-white border border-[#e2e8f0] rounded-xl p-5"><div className="flex items-center justify-between mb-5"><div><h3 className="font-semibold text-[#14213d]">Top scorer</h3><p className="text-xs text-[#6b7c93] mt-1">Most goals in your archive</p></div><Goal className="w-5 h-5 text-[#d9a441]" /></div>{topScorer ? <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl bg-[#f1f5f9] flex items-center justify-center"><Users className="w-6 h-6 text-[#cbd5e1]" /></div><div className="flex-1"><p className="font-semibold text-[#14213d]">{topScorer.name}</p><p className="text-xs text-[#6b7c93] mt-1">{topScorer.position || 'Player'}</p></div><div className="text-right"><p className="text-2xl font-bold text-[#d9a441]">{topScorer.goals}</p><p className="text-xs text-[#6b7c93]">goals</p></div></div> : <div className="flex items-center gap-3 text-[#6b7c93] text-sm"><Upload className="w-4 h-4" /> Import player data to see leaders</div>}</div>
         <div className="bg-white border border-[#e2e8f0] rounded-xl p-5"><div className="flex items-center justify-between mb-5"><div><h3 className="font-semibold text-[#14213d]">Recent highlights</h3><p className="text-xs text-[#6b7c93] mt-1">Latest archive additions</p></div><Award className="w-5 h-5 text-[#e76f51]" /></div>{awards.length || trophies.length ? <div className="space-y-3">{[...awards.slice(0, 2).map((a) => ({ ...a, label: a.award_type || 'Award', sub: a.player_name, icon: Award, color: 'text-[#e76f51]' })), ...trophies.slice(0, 1).map((t) => ({ ...t, label: t.name, sub: t.season || 'Trophy', icon: Trophy, color: 'text-[#d9a441]' }))].slice(0, 3).map((item, index) => { const Icon = item.icon; return <div key={`${item.label}-${index}`} className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#f1f5f9] flex items-center justify-center"><Icon className={`w-4 h-4 ${item.color}`} /></div><div><p className="text-sm font-medium text-[#14213d]">{item.label}</p><p className="text-xs text-[#6b7c93]">{item.sub}</p></div></div>; })}</div> : <p className="text-sm text-[#6b7c93]">Your latest trophies and awards will appear here.</p>}</div>
       </section>
     </div>
