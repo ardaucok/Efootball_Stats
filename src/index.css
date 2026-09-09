@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #14213d;
+    background: #eef2f6;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: #eef2f6;
+    color: #14213d;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  .skeleton {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+/* ── Palette ── navy #14213d, green #2f7d5a, gold #d9a441, terracotta #e76f51, teal #264653 */
+
+/* Page & panel backgrounds */
+.bg-slate-950 { background-color: #eef2f6 !important; }
+.bg-slate-900 { background-color: #ffffff !important; }
+.bg-slate-800 { background-color: #f1f5f9 !important; }
+.bg-slate-800\/50 { background-color: rgb(241 245 249 / 60%) !important; }
+.bg-slate-800\/30 { background-color: rgb(241 245 249 / 40%) !important; }
+.bg-black\/60 { background-color: rgb(20 33 61 / 45%) !important; }
+.bg-black\/70 { background-color: rgb(20 33 61 / 60%) !important; }
+
+/* Borders */
+.border-slate-800 { border-color: #e2e8f0 !important; }
+.border-slate-700 { border-color: #cbd5e1 !important; }
+.border-slate-800\/70 { border-color: rgb(226 232 240 / 70%) !important; }
+.border-slate-800\/50 { border-color: rgb(226 232 240 / 50%) !important; }
+
+/* Text — navy ramp */
+.text-slate-100 { color: #14213d !important; }
+.text-slate-200 { color: #1c2f52 !important; }
+.text-slate-300 { color: #2d4a6f !important; }
+.text-slate-400 { color: #6b7c93 !important; }
+.text-slate-500 { color: #6b7c93 !important; }
+.text-slate-600 { color: #94a3b8 !important; }
+.text-slate-700 { color: #b7c4d6 !important; }
+.text-slate-950 { color: #ffffff !important; }
+
+/* Green → forest green */
+.text-emerald-400 { color: #2f7d5a !important; }
+.text-emerald-300 { color: #3a9a72 !important; }
+.bg-emerald-500 { background-color: #2f7d5a !important; }
+.bg-emerald-400 { background-color: #3a9a72 !important; }
+.bg-emerald-500\/10 { background-color: rgb(47 125 90 / 12%) !important; }
+.bg-emerald-400\/10 { background-color: rgb(58 154 114 / 12%) !important; }
+.border-emerald-500\/20 { border-color: rgb(47 125 90 / 28%) !important; }
+.border-emerald-500\/40 { border-color: rgb(47 125 90 / 48%) !important; }
+.border-emerald-500\/10 { border-color: rgb(47 125 90 / 10%) !important; }
+.border-emerald-400\/20 { border-color: rgb(58 154 114 / 28%) !important; }
+.border-emerald-500\/50 { border-color: rgb(47 125 90 / 50%) !important; }
+.shadow-emerald-500\/20 { --tw-shadow-color: rgb(47 125 90 / 20%) !important; }
+
+/* Blue → gold */
+.text-blue-400 { color: #b8861f !important; }
+.bg-blue-500 { background-color: #d9a441 !important; }
+.bg-blue-500\/10 { background-color: rgb(217 164 65 / 12%) !important; }
+
+/* Red → terracotta */
+.text-rose-400 { color: #e76f51 !important; }
+.text-rose-300 { color: #d05a3e !important; }
+.text-rose-500\/40 { color: rgb(231 111 81 / 40%) !important; }
+.bg-rose-500 { background-color: #e76f51 !important; }
+.bg-rose-500\/10 { background-color: rgb(231 111 81 / 12%) !important; }
+.border-rose-500\/30 { border-color: rgb(231 111 81 / 35%) !important; }
+
+/* Amber → gold */
+.text-amber-400 { color: #b8861f !important; }
+.text-amber-500\/40 { color: rgb(217 164 65 / 40%) !important; }
+.bg-amber-500 { background-color: #d9a441 !important; }
+.bg-amber-500\/10 { background-color: rgb(217 164 65 / 12%) !important; }
+.border-amber-500\/30 { border-color: rgb(217 164 65 / 35%) !important; }
+
+/* Gradients */
+.from-emerald-400 { --tw-gradient-from: #3a9a72 var(--tw-gradient-from-position) !important; }
+.to-teal-600 { --tw-gradient-to: #2f7d5a var(--tw-gradient-to-position) !important; }
+.from-slate-900 { --tw-gradient-from: #ffffff var(--tw-gradient-from-position) !important; }
+.via-slate-900 { --tw-gradient-via: #ffffff var(--tw-gradient-via-position) !important; }
+.to-emerald-950\/60 { --tw-gradient-to: rgb(47 125 90 / 20%) var(--tw-gradient-to-position) !important; }
+.from-amber-950\/40 { --tw-gradient-from: rgb(217 164 65 / 15%) var(--tw-gradient-from-position) !important; }
+.from-rose-950\/40 { --tw-gradient-from: rgb(231 111 81 / 12%) var(--tw-gradient-from-position) !important; }
+.to-slate-800 { --tw-gradient-to: #f1f5f9 var(--tw-gradient-to-position) !important; }
+
+/* Hover states */
+.hover\:text-white:hover { color: #14213d !important; }
+.hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
+.hover\:bg-slate-800\/50:hover { background-color: rgb(241 245 249 / 60%) !important; }
+.hover\:bg-slate-700:hover { background-color: #e2e8f0 !important; }
+.hover\:bg-emerald-400:hover { background-color: #3a9a72 !important; }
+.hover\:bg-blue-400:hover { background-color: #e6b85a !important; }
+.hover\:bg-rose-400:hover { background-color: #f08366 !important; }
+.hover\:bg-amber-400:hover { background-color: #e6b85a !important; }
+.hover\:text-rose-300:hover { color: #d05a3e !important; }
+.hover\:text-emerald-300:hover { color: #3a9a72 !important; }
+.hover\:border-slate-700:hover { border-color: #cbd5e1 !important; }
+.hover\:border-emerald-500\/40:hover { border-color: rgb(47 125 90 / 48%) !important; }
+.hover\:border-rose-500\/30:hover { border-color: rgb(231 111 81 / 35%) !important; }
+.hover\:border-amber-500\/30:hover { border-color: rgb(217 164 65 / 35%) !important; }
+
+/* Focus */
+.focus\:border-emerald-500\/50:focus { border-color: rgb(47 125 90 / 50%) !important; }
+
+/* Group hover */
+.group:hover .group-hover\:text-emerald-400 { color: #2f7d5a !important; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
