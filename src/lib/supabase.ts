@@ -18,8 +18,17 @@ export type Player = {
   goal_contribution_pm: number;
   goal_contribution: number;
   season: string | null;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type PlayerImage = {
+  id: string;
+  player_id: string;
+  image_url: string;
+  caption: string | null;
+  created_at: string;
 };
 
 export type Standing = {

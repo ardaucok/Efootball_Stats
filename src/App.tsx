@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { LayoutDashboard, Users, Trophy, Award, BarChart3, Menu, X } from 'lucide-react';
 import HomePage from '@/pages/HomePage';
 import PlayerStatsPage from '@/pages/PlayerStatsPage';
+import PlayerDetailPage from '@/pages/PlayerDetailPage';
 import LeagueStatsPage from '@/pages/LeagueStatsPage';
 import TrophyRoomPage from '@/pages/TrophyRoomPage';
 import AwardedPlayersPage from '@/pages/AwardedPlayersPage';
 
-type PageId = 'home' | 'players' | 'league' | 'trophies' | 'awards';
+type PageId = 'home' | 'players' | 'player-detail' | 'league' | 'trophies' | 'awards';
 
 const NAV_ITEMS: { id: PageId; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'home', label: 'Home', icon: LayoutDashboard },
@@ -19,10 +20,16 @@ const NAV_ITEMS: { id: PageId; label: string; icon: typeof LayoutDashboard }[] =
 function App() {
   const [activePage, setActivePage] = useState<PageId>('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   const handleNavigate = (page: PageId) => {
     setActivePage(page);
     setSidebarOpen(false);
+  };
+
+  const openPlayerDetail = (playerId: string) => {
+    setSelectedPlayerId(playerId);
+    setActivePage('player-detail');
   };
 
   const renderPage = () => {
@@ -30,7 +37,9 @@ function App() {
       case 'home':
         return <HomePage onNavigate={handleNavigate} />;
       case 'players':
-        return <PlayerStatsPage />;
+        return <PlayerStatsPage onPlayerClick={openPlayerDetail} />;
+      case 'player-detail':
+        return selectedPlayerId ? <PlayerDetailPage playerId={selectedPlayerId} onBack={() => { setSelectedPlayerId(null); setActivePage('players'); }} /> : <PlayerStatsPage onPlayerClick={openPlayerDetail} />;
       case 'league':
         return <LeagueStatsPage />;
       case 'trophies':
