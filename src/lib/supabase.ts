@@ -96,3 +96,11 @@ export type TeamPlayerStat = {
   assists: number;
   created_at: string;
 };
+
+export type AwardedPlayer = {
+  id: string;
+  player_id: string;
+  player_name: string;
+  card_image_url: string | null;
+  created_at: string;
+};
