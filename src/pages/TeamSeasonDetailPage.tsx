@@ -187,7 +187,7 @@ function StatCard({ icon: Icon, label, value, accent }: { icon: typeof BarChart3
   return (
     <div className="bg-white/5 rounded-xl p-4 border border-white/5">
       <Icon className="w-4 h-4 text-slate-500 mb-2" />
-      <p className="text-2xl font-bold {accent || 'text-white'}">{value}</p>
+      <p className={`text-2xl font-bold ${accent || 'text-white'}`}>{value}</p>
       <p className="text-xs text-slate-500 mt-0.5">{label}</p>
     </div>
   );
