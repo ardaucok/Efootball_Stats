@@ -8,7 +8,7 @@ type PlayerForm = Omit<Player, 'id' | 'created_at' | 'updated_at'>;
 
 const emptyForm: PlayerForm = {
   name: '', position: '', appearances: 0, goals: 0, assists: 0, goal_per_match: 0,
-  assists_per_match: 0, confidence: 0, goal_contribution_pm: 0, goal_contribution: 0, season: '2025-2026', image_url: '',
+  assists_per_match: 0, confidence: 0, goal_contribution_pm: 0, goal_contribution: 0, season: '', image_url: '',
 };
 
 const numberFields: (keyof PlayerForm)[] = ['appearances', 'goals', 'assists', 'goal_per_match', 'assists_per_match', 'confidence', 'goal_contribution_pm', 'goal_contribution'];
@@ -41,7 +41,7 @@ function rowToPlayer(row: Record<string, unknown>): PlayerForm {
     confidence: toNumber(valueFromRow(row, 'Confidence', 'confidence')),
     goal_contribution_pm: toNumber(valueFromRow(row, 'Goal Contribution PM', 'goal_contribution_pm')),
     goal_contribution: toNumber(valueFromRow(row, 'Goal Contribution', 'goal_contribution')),
-    season: String(valueFromRow(row, 'Season', 'season') || '2025-2026'),
+    season: String(valueFromRow(row, 'Season', 'season') || ''),
   };
 }
 

@@ -10,7 +10,7 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
   const [showForm, setShowForm] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [message, setMessage] = useState('');
-  const [form, setForm] = useState({ team: '', played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, season: '2025-2026', logo_url: '' as string | null });
+  const [form, setForm] = useState({ team: '', played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, season: '', logo_url: '' as string | null });
 
   const load = async () => {
     const { data } = await supabase.from('standings').select('*').order('points', { ascending: false });
@@ -22,8 +22,8 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
   const open = (row?: Standing) => {
     setEditing(row || null);
     setForm(row
-      ? { team: row.team, played: row.played, won: row.won, drawn: row.drawn, lost: row.lost, goals_for: row.goals_for, goals_against: row.goals_against, points: row.points, season: row.season || '2025-2026', logo_url: row.logo_url }
-      : { team: '', played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, season: '2025-2026', logo_url: null });
+      ? { team: row.team, played: row.played, won: row.won, drawn: row.drawn, lost: row.lost, goals_for: row.goals_for, goals_against: row.goals_against, points: row.points, season: row.season || '', logo_url: row.logo_url }
+      : { team: '', played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, points: 0, season: '', logo_url: null });
     setShowForm(true);
   };
 
@@ -94,7 +94,7 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
           <BarChart3 className="w-5 h-5 text-blue-400" />
           <div>
             <h3 className="font-semibold">League table</h3>
-            <p className="text-xs text-slate-500 mt-1">Season 2025-2026 · {standings.length} teams</p>
+            <p className="text-xs text-slate-500 mt-1">{standings.length} teams</p>
           </div>
         </div>
 
@@ -120,7 +120,7 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
                 <tr
                   key={row.id}
                   className="border-b border-slate-800/70 last:border-0 hover:bg-slate-800/30 cursor-pointer transition-colors"
-                  onClick={() => handleTeamClick(row.team, row.season || '2025-2026')}
+                  onClick={() => handleTeamClick(row.team, row.season || '')}
                 >
                   <td className="px-5 py-4 text-slate-500">{index + 1}</td>
                   <td className="px-4 py-4 font-medium text-slate-200">

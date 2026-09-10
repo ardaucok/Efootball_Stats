@@ -32,8 +32,8 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
   const [showAwardImagePicker, setShowAwardImagePicker] = useState(false);
   const [showTeamLogoPicker, setShowTeamLogoPicker] = useState(false);
   const [showTrophyImagePicker, setShowTrophyImagePicker] = useState(false);
-  const [teamForm, setTeamForm] = useState({ team_name: '', team_logo_url: '', season: '' });
-  const [trophyForm, setTrophyForm] = useState({ name: '', season: '', team: '', image_url: '', description: '' });
+  const [teamForm, setTeamForm] = useState({ team_name: '', team_logo_url: '' });
+  const [trophyForm, setTrophyForm] = useState({ name: '', team: '', image_url: '', description: '' });
   const [awardForm, setAwardForm] = useState({ award_type: '', team: '', image_url: '', description: '' });
 
   useEffect(() => {
@@ -77,7 +77,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
     if (data) {
       setTrophies((prev) => [data as TrophyType, ...prev]);
       setShowTrophyForm(false);
-      setTrophyForm({ name: '', season: '', team: '', image_url: '', description: '' });
+      setTrophyForm({ name: '', team: '', image_url: '', description: '' });
     }
   };
 
@@ -87,7 +87,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
     if (data) {
       setTeams((prev) => [...prev, data as PlayerTeam]);
       setShowTeamForm(false);
-      setTeamForm({ team_name: '', team_logo_url: '', season: '' });
+      setTeamForm({ team_name: '', team_logo_url: '' });
     }
   };
 
@@ -142,7 +142,6 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
             {teams.map((team) => <div key={team.id} className="group flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
               {team.team_logo_url ? <img src={team.team_logo_url} alt="" className="w-5 h-5 object-contain" /> : <Building2 className="w-4 h-4 text-[#2f7d5a]" />}
               <span className="text-xs font-medium text-slate-700">{team.team_name}</span>
-              {team.season && <span className="text-[10px] text-slate-400">{team.season}</span>}
               <button onClick={() => deleteTeam(team.id)} className="ml-1 text-slate-300 hover:text-rose-500" aria-label={`Remove ${team.team_name}`}><X className="w-3 h-3" /></button>
             </div>)}
           </div>}
@@ -152,7 +151,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
             {trophies.map((trophy) => <div key={trophy.id} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200" title={trophy.description || trophy.name}>
               {trophy.image_url ? <img src={trophy.image_url} alt="" className="w-5 h-5 object-contain" /> : <Trophy className="w-4 h-4 text-amber-600" />}
               <span className="text-xs font-medium text-amber-900">{trophy.name}</span>
-              {trophy.season && <span className="text-[10px] text-amber-700">{trophy.season}</span>}
+              {trophy.team && <span className="text-[10px] text-amber-700">{trophy.team}</span>}
             </div>)}
           </div>}
         </div>
@@ -212,7 +211,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
     {showTrophyForm && <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-100"><h3 className="font-semibold text-[#14213d]">Add trophy for {player.name}</h3><button onClick={() => setShowTrophyForm(false)} className="text-slate-400 hover:text-slate-700"><X className="w-5 h-5" /></button></div>
-        <div className="p-5 space-y-4"><button onClick={() => setShowTrophyImagePicker(true)} className="flex items-center gap-2 cursor-pointer text-xs text-amber-600 hover:text-amber-500"><ImagePlus className="w-4 h-4" /> Select trophy image</button>{trophyForm.image_url && <img src={trophyForm.image_url} alt="" className="w-full h-32 object-cover rounded-lg" />}{([['name', 'Trophy name'], ['season', 'Season'], ['team', 'Team'], ['image_url', 'Image URL']] as const).map(([key, label]) => <label key={key} className="block text-xs text-slate-500">{label}<input value={trophyForm[key]} onChange={(e) => setTrophyForm({ ...trophyForm, [key]: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-amber-400/50" /></label>)}<label className="block text-xs text-slate-500">Description<textarea rows={3} value={trophyForm.description} onChange={(e) => setTrophyForm({ ...trophyForm, description: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm resize-none outline-none focus:border-amber-400/50" /></label></div>
+        <div className="p-5 space-y-4"><button onClick={() => setShowTrophyImagePicker(true)} className="flex items-center gap-2 cursor-pointer text-xs text-amber-600 hover:text-amber-500"><ImagePlus className="w-4 h-4" /> Select trophy image</button>{trophyForm.image_url && <img src={trophyForm.image_url} alt="" className="w-full h-32 object-cover rounded-lg" />}{([['name', 'Trophy name'], ['team', 'Team'], ['image_url', 'Image URL']] as const).map(([key, label]) => <label key={key} className="block text-xs text-slate-500">{label}<input value={trophyForm[key]} onChange={(e) => setTrophyForm({ ...trophyForm, [key]: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-amber-400/50" /></label>)}<label className="block text-xs text-slate-500">Description<textarea rows={3} value={trophyForm.description} onChange={(e) => setTrophyForm({ ...trophyForm, description: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm resize-none outline-none focus:border-amber-400/50" /></label></div>
         <div className="flex justify-end gap-2 p-5 border-t border-slate-100"><button onClick={() => setShowTrophyForm(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button><button onClick={saveTrophy} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600"><Save className="w-4 h-4" /> Save trophy</button></div>
       </div>
     </div>}
@@ -222,7 +221,7 @@ function PlayerDetailPage({ playerId, onBack }: PlayerDetailPageProps) {
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg">
         <div className="flex items-center justify-between p-5 border-b border-slate-100"><h3 className="font-semibold text-[#14213d]">Add team for {player.name}</h3><button onClick={() => setShowTeamForm(false)} className="text-slate-400 hover:text-slate-700"><X className="w-5 h-5" /></button></div>
         <div className="p-5 space-y-4">
-          {([['team_name', 'Team name'], ['season', 'Season']] as const).map(([key, label]) => <label key={key} className="block text-xs text-slate-500">{label}<input value={teamForm[key]} onChange={(e) => setTeamForm({ ...teamForm, [key]: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#2f7d5a]/50" /></label>)}<div><button onClick={() => setShowTeamLogoPicker(true)} className="flex items-center gap-2 cursor-pointer text-xs text-[#2f7d5a] hover:text-[#256548]"><ImagePlus className="w-4 h-4" /> Select team logo</button>{teamForm.team_logo_url && <img src={teamForm.team_logo_url} alt="" className="mt-2 w-12 h-12 object-contain rounded-lg" />}</div>
+          {([['team_name', 'Team name']] as const).map(([key, label]) => <label key={key} className="block text-xs text-slate-500">{label}<input value={teamForm[key]} onChange={(e) => setTeamForm({ ...teamForm, [key]: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#2f7d5a]/50" /></label>)}<div><button onClick={() => setShowTeamLogoPicker(true)} className="flex items-center gap-2 cursor-pointer text-xs text-[#2f7d5a] hover:text-[#256548]"><ImagePlus className="w-4 h-4" /> Select team logo</button>{teamForm.team_logo_url && <img src={teamForm.team_logo_url} alt="" className="mt-2 w-12 h-12 object-contain rounded-lg" />}</div>
         </div>
         <div className="flex justify-end gap-2 p-5 border-t border-slate-100"><button onClick={() => setShowTeamForm(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button><button onClick={saveTeam} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2f7d5a] text-white text-sm font-semibold hover:bg-[#256548]"><Save className="w-4 h-4" /> Save team</button></div>
       </div>

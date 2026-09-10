@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, BarChart3, Users, Trophy as TrophyIcon, Shield, Target, TrendingUp, Plus, Save, X, Image as ImageIcon, Trash2, UserCircle, Goal } from 'lucide-react';
+import { ArrowLeft, Users, Trophy as TrophyIcon, Shield, Plus, Save, X, Image as ImageIcon, Trash2, UserCircle, Goal, ImagePlus } from 'lucide-react';
 import { supabase, type Standing, type Player, type PlayerTeam, type Trophy, type TeamStaff, type TeamPlayerStat } from '@/lib/supabase';
 import ImagePicker from '@/components/ImagePicker';
 
@@ -14,6 +14,9 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
   const [standing, setStanding] = useState<Standing | null>(null);
   const [players, setPlayers] = useState<(PlayerTeam & { player?: Player })[]>([]);
   const [trophies, setTrophies] = useState<Trophy[]>([]);
+  const [showTrophyForm, setShowTrophyForm] = useState(false);
+  const [showTrophyImagePicker, setShowTrophyImagePicker] = useState(false);
+  const [trophyForm, setTrophyForm] = useState({ name: '', team: '', image_url: '', description: '' });
   const [staff, setStaff] = useState<TeamStaff[]>([]);
   const [playerStats, setPlayerStats] = useState<TeamPlayerStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,6 +122,14 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
     await load();
   };
 
+  const saveTrophy = async () => {
+    if (!trophyForm.name.trim() || !trophyForm.image_url) return;
+    await supabase.from('trophies').insert({ ...trophyForm, team });
+    setTrophyForm({ name: '', team: '', image_url: '', description: '' });
+    setShowTrophyForm(false);
+    await load();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -127,7 +138,6 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
     );
   }
 
-  const winRate = standing ? Math.round((standing.won / Math.max(standing.played, 1)) * 100) : 0;
   const manager = staff.find((s) => s.role === 'manager');
   const goalkeeper = staff.find((s) => s.role === 'goalkeeper');
 
@@ -149,22 +159,23 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
           )}
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-white">{team}</h2>
-            <p className="text-sm text-slate-400 mt-1">Season {season}</p>
           </div>
         </div>
 
-        {standing && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-            <StatCard icon={BarChart3} label="Played" value={standing.played} />
-            <StatCard icon={TrendingUp} label="Win Rate" value={`${winRate}%`} />
-            <StatCard icon={Target} label="Goals For" value={standing.goals_for} />
-            <StatCard icon={TrophyIcon} label="Points" value={standing.points} accent="text-blue-400" />
+        <div className="mt-6 flex items-center justify-between gap-4 border-t border-white/10 pt-5">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-slate-500">Team trophies</p>
+            <p className="text-sm text-slate-300 mt-1">Add the trophies won by this team.</p>
           </div>
-        )}
+          <button onClick={() => setShowTrophyForm(true)} className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500 text-slate-950 text-sm font-semibold hover:bg-amber-400">
+            <Plus className="w-4 h-4" /> Add trophy
+          </button>
+        </div>
       </div>
 
       {/* Manager & Goalkeeper */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
         {/* Manager */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
@@ -236,25 +247,7 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
         </div>
       </div>
 
-      {/* Detailed stats */}
-      {standing && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-800 flex items-center gap-3">
-            <BarChart3 className="w-5 h-5 text-blue-400" />
-            <h3 className="font-semibold">Season Statistics</h3>
-          </div>
-          <div className="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <DetailStat label="Played" value={standing.played} />
-            <DetailStat label="Won" value={standing.won} color="text-green-400" />
-            <DetailStat label="Drawn" value={standing.drawn} color="text-yellow-400" />
-            <DetailStat label="Lost" value={standing.lost} color="text-red-400" />
-            <DetailStat label="Goals For" value={standing.goals_for} />
-            <DetailStat label="Goals Against" value={standing.goals_against} />
-            <DetailStat label="Goal Difference" value={standing.goals_for - standing.goals_against} color={standing.goals_for - standing.goals_against >= 0 ? 'text-green-400' : 'text-red-400'} />
-            <DetailStat label="Points" value={standing.points} color="text-blue-400" />
-          </div>
-        </div>
-      )}
+
 
       {/* Player Stats (manual) */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
@@ -339,38 +332,58 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
         ) : (
           <div className="py-12 text-center">
             <Users className="w-8 h-8 text-slate-700 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm">No players linked to this team for this season</p>
+            <p className="text-slate-500 text-sm">No players linked to this team</p>
           </div>
         )}
       </div>
 
       {/* Trophies */}
-      {trophies.length > 0 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-800 flex items-center gap-3">
-            <TrophyIcon className="w-5 h-5 text-blue-400" />
-            <h3 className="font-semibold">Trophies ({trophies.length})</h3>
-          </div>
-          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-800 flex items-center gap-3">
+          <TrophyIcon className="w-5 h-5 text-amber-400" />
+          <h3 className="font-semibold">Team trophies ({trophies.length})</h3>
+        </div>
+        {trophies.length > 0 ? (
+          <div className="flex gap-4 overflow-x-auto p-5">
             {trophies.map((t) => (
-              <div key={t.id} className="bg-slate-800/50 border border-slate-800 rounded-lg p-4 flex items-center gap-3">
-                {t.image_url ? (
-                  <img src={t.image_url} alt={t.name} className="w-12 h-12 object-contain rounded" />
-                ) : (
-                  <div className="w-12 h-12 rounded bg-slate-700 flex items-center justify-center">
-                    <TrophyIcon className="w-5 h-5 text-slate-500" />
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium text-slate-200 text-sm">{t.name}</p>
-                  <p className="text-xs text-slate-500">{t.season || '—'}</p>
-                  {t.player_name && <p className="text-xs text-blue-400 mt-0.5">{t.player_name}</p>}
+              <div key={t.id} className="shrink-0 w-56 bg-slate-800/50 border border-slate-800 rounded-lg p-3 flex items-center gap-3">
+                {t.image_url ? <img src={t.image_url} alt={t.name} className="w-16 h-16 object-contain rounded" /> : <TrophyIcon className="w-8 h-8 text-slate-500" />}
+                <div className="min-w-0">
+                  <p className="font-medium text-slate-200 text-sm truncate">{t.name}</p>
+                  <p className="text-xs text-amber-400 mt-1 truncate">{t.team || team}</p>
+                  {t.description && <p className="text-xs text-slate-500 mt-1 line-clamp-2">{t.description}</p>}
                 </div>
               </div>
             ))}
           </div>
+        ) : <div className="py-10 text-center text-sm text-slate-500">No trophies added yet</div>}
+      </div>
+
+      {/* Trophy form modal */}
+      {showTrophyForm && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md">
+            <div className="flex justify-between p-5 border-b border-slate-800">
+              <h3 className="font-semibold">Add team trophy</h3>
+              <button onClick={() => setShowTrophyForm(false)}><X className="w-5 h-5 text-slate-500" /></button>
+            </div>
+            <div className="p-5 space-y-4">
+              <label className="block text-xs text-slate-400">Trophy name<input value={trophyForm.name} onChange={(e) => setTrophyForm({ ...trophyForm, name: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-900" /></label>
+              <label className="block text-xs text-slate-400">Team name<input value={trophyForm.team} onChange={(e) => setTrophyForm({ ...trophyForm, team: e.target.value })} placeholder={team} className="mt-1.5 w-full bg-white border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-900" /></label>
+              <div>
+                <span className="text-xs text-slate-400">Trophy image</span>
+                <div className="mt-1.5 flex items-center gap-3">
+                  {trophyForm.image_url ? <img src={trophyForm.image_url} alt="trophy" className="w-16 h-16 object-contain rounded-lg bg-white/5" /> : <div className="w-16 h-16 rounded-lg border border-dashed border-slate-700 flex items-center justify-center"><ImagePlus className="w-5 h-5 text-slate-600" /></div>}
+                  <button onClick={() => setShowTrophyImagePicker(true)} className="px-3 py-2 rounded-lg border border-slate-700 text-sm text-slate-300 hover:bg-slate-800">Select image</button>
+                </div>
+              </div>
+              <label className="block text-xs text-slate-400">Description<textarea rows={3} value={trophyForm.description} onChange={(e) => setTrophyForm({ ...trophyForm, description: e.target.value })} className="mt-1.5 w-full bg-white border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-900 resize-none" /></label>
+            </div>
+            <div className="flex justify-end gap-2 p-5 border-t border-slate-800"><button onClick={() => setShowTrophyForm(false)} className="px-4 py-2 text-sm text-slate-400">Cancel</button><button onClick={saveTrophy} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-slate-950 text-sm font-semibold"><Save className="w-4 h-4" /> Save</button></div>
+          </div>
         </div>
       )}
+      {showTrophyImagePicker && <ImagePicker category="trophies" currentUrl={trophyForm.image_url} onSelect={(url) => setTrophyForm((current) => ({ ...current, image_url: url }))} onClose={() => setShowTrophyImagePicker(false)} />}
 
       {/* Staff form modal */}
       {showStaffForm && (
@@ -501,25 +514,6 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
           onClose={() => setShowStaffImagePicker(false)}
         />
       )}
-    </div>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, accent }: { icon: typeof BarChart3; label: string; value: string | number; accent?: string }) {
-  return (
-    <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-      <Icon className="w-4 h-4 text-slate-500 mb-2" />
-      <p className={`text-2xl font-bold ${accent || 'text-white'}`}>{value}</p>
-      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
-    </div>
-  );
-}
-
-function DetailStat({ label, value, color }: { label: string; value: number; color?: string }) {
-  return (
-    <div>
-      <p className="text-xs text-slate-500 uppercase tracking-wider">{label}</p>
-      <p className={`text-xl font-bold mt-1 ${color || 'text-slate-200'}`}>{value}</p>
     </div>
   );
 }
