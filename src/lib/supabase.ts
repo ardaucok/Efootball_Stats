@@ -76,3 +76,23 @@ export type Award = {
   description: string | null;
   created_at: string;
 };
+
+export type TeamStaff = {
+  id: string;
+  team_name: string;
+  season: string | null;
+  role: 'manager' | 'goalkeeper';
+  name: string;
+  image_url: string | null;
+  created_at: string;
+};
+
+export type TeamPlayerStat = {
+  id: string;
+  team_name: string;
+  season: string | null;
+  player_name: string;
+  goals: number;
+  assists: number;
+  created_at: string;
+};
