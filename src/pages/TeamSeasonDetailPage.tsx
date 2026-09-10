@@ -34,10 +34,10 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
 
     const [{ data: standingData }, { data: playerTeamsData }, { data: trophiesData }, { data: staffData }, { data: statsData }] = await Promise.all([
       supabase.from('standings').select('*').eq('team', team).eq('season', season).maybeSingle(),
-      supabase.from('player_teams').select('*').eq('team_name', team).eq('season', season),
+      supabase.from('player_teams').select('*').eq('team_name', team),
       supabase.from('trophies').select('*').eq('team', team),
-      supabase.from('team_staff').select('*').eq('team_name', team).eq('season', season),
-      supabase.from('team_player_stats').select('*').eq('team_name', team).eq('season', season),
+      supabase.from('team_staff').select('*').eq('team_name', team),
+      supabase.from('team_player_stats').select('*').eq('team_name', team),
     ]);
 
     setStanding(standingData as Standing | null);
