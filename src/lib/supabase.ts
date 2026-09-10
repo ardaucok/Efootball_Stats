@@ -42,6 +42,7 @@ export type Standing = {
   goals_against: number;
   points: number;
   season: string | null;
+  logo_url: string | null;
   created_at: string;
 };
 
@@ -52,6 +53,16 @@ export type Trophy = {
   team: string | null;
   image_url: string | null;
   description: string | null;
+  player_name: string | null;
+  created_at: string;
+};
+
+export type PlayerTeam = {
+  id: string;
+  player_id: string;
+  team_name: string;
+  team_logo_url: string | null;
+  season: string | null;
   created_at: string;
 };
 

@@ -4,10 +4,11 @@ import HomePage from '@/pages/HomePage';
 import PlayerStatsPage from '@/pages/PlayerStatsPage';
 import PlayerDetailPage from '@/pages/PlayerDetailPage';
 import LeagueStatsPage from '@/pages/LeagueStatsPage';
+import TeamSeasonDetailPage from '@/pages/TeamSeasonDetailPage';
 import TrophyRoomPage from '@/pages/TrophyRoomPage';
 import AwardedPlayersPage from '@/pages/AwardedPlayersPage';
 
-type PageId = 'home' | 'players' | 'player-detail' | 'league' | 'trophies' | 'awards';
+type PageId = 'home' | 'players' | 'player-detail' | 'league' | 'team-season' | 'trophies' | 'awards';
 
 const NAV_ITEMS: { id: PageId; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'home', label: 'Home', icon: LayoutDashboard },
@@ -21,6 +22,7 @@ function App() {
   const [activePage, setActivePage] = useState<PageId>('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<{ team: string; season: string } | null>(null);
 
   const handleNavigate = (page: PageId) => {
     setActivePage(page);
@@ -32,6 +34,11 @@ function App() {
     setActivePage('player-detail');
   };
 
+  const openTeamSeason = (team: string, season: string) => {
+    setSelectedTeam({ team, season });
+    setActivePage('team-season');
+  };
+
   const renderPage = () => {
     switch (activePage) {
       case 'home':
@@ -41,7 +48,9 @@ function App() {
       case 'player-detail':
         return selectedPlayerId ? <PlayerDetailPage playerId={selectedPlayerId} onBack={() => { setSelectedPlayerId(null); setActivePage('players'); }} /> : <PlayerStatsPage onPlayerClick={openPlayerDetail} />;
       case 'league':
-        return <LeagueStatsPage />;
+        return <LeagueStatsPage onTeamClick={openTeamSeason} />;
+      case 'team-season':
+        return selectedTeam ? <TeamSeasonDetailPage team={selectedTeam.team} season={selectedTeam.season} onBack={() => { setSelectedTeam(null); setActivePage('league'); }} onPlayerClick={openPlayerDetail} /> : <LeagueStatsPage onTeamClick={openTeamSeason} />;
       case 'trophies':
         return <TrophyRoomPage />;
       case 'awards':
