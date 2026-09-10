@@ -111,7 +111,7 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
                 <th className="text-right px-4 py-4">GF</th>
                 <th className="text-right px-4 py-4">GA</th>
                 <th className="text-right px-4 py-4">GD</th>
-                <th className="text-right px-5 py-4">Pts</th>
+                <th className="text-right px-5 py-4">GF:GA</th>
                 <th></th>
               </tr>
             </thead>
@@ -138,7 +138,7 @@ function LeagueStatsPage({ onTeamClick }: { onTeamClick?: (team: string, season:
                   <td className="px-4 py-4 text-right text-slate-400">{row.goals_for}</td>
                   <td className="px-4 py-4 text-right text-slate-400">{row.goals_against}</td>
                   <td className="px-4 py-4 text-right text-slate-400">{row.goals_for - row.goals_against}</td>
-                  <td className="px-5 py-4 text-right font-bold text-blue-400">{row.points}</td>
+                  <td className="px-5 py-4 text-right font-bold text-blue-400">{row.goals_for}:{row.goals_against}</td>
                   <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
                     <button onClick={() => open(row)} className="text-xs text-slate-500 hover:text-white">Edit</button>
                   </td>
