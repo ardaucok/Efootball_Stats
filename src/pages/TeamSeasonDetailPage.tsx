@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, BarChart3, Users, Trophy, Shield, Target, TrendingUp, Plus, Save, X, Image as ImageIcon, Trash2, UserCircle, Goal } from 'lucide-react';
+import { ArrowLeft, BarChart3, Users, Trophy as TrophyIcon, Shield, Target, TrendingUp, Plus, Save, X, Image as ImageIcon, Trash2, UserCircle, Goal } from 'lucide-react';
 import { supabase, type Standing, type Player, type PlayerTeam, type Trophy, type TeamStaff, type TeamPlayerStat } from '@/lib/supabase';
 import ImagePicker from '@/components/ImagePicker';
 
@@ -158,7 +158,7 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
             <StatCard icon={BarChart3} label="Played" value={standing.played} />
             <StatCard icon={TrendingUp} label="Win Rate" value={`${winRate}%`} />
             <StatCard icon={Target} label="Goals For" value={standing.goals_for} />
-            <StatCard icon={Trophy} label="Points" value={standing.points} accent="text-blue-400" />
+            <StatCard icon={TrophyIcon} label="Points" value={standing.points} accent="text-blue-400" />
           </div>
         )}
       </div>
@@ -348,7 +348,7 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
       {trophies.length > 0 && (
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-800 flex items-center gap-3">
-            <Trophy className="w-5 h-5 text-blue-400" />
+            <TrophyIcon className="w-5 h-5 text-blue-400" />
             <h3 className="font-semibold">Trophies ({trophies.length})</h3>
           </div>
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -358,7 +358,7 @@ function TeamSeasonDetailPage({ team, season, onBack, onPlayerClick }: TeamSeaso
                   <img src={t.image_url} alt={t.name} className="w-12 h-12 object-contain rounded" />
                 ) : (
                   <div className="w-12 h-12 rounded bg-slate-700 flex items-center justify-center">
-                    <Trophy className="w-5 h-5 text-slate-500" />
+                    <TrophyIcon className="w-5 h-5 text-slate-500" />
                   </div>
                 )}
                 <div>
